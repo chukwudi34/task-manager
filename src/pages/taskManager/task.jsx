@@ -233,7 +233,7 @@ export default function Task() {
                   Pro Plan (Unlimited Tasks)
                 </span>
               ) : (
-                <span className="inline-block bg-gray-200 text-gray-600 text-xs sm:text-sm font-medium px-3 py-1 rounded-full w-full sm:w-auto text-center sm:text-left">
+                <span className="flex justify-center items-center bg-gray-200 text-gray-600 text-xs sm:text-sm font-medium px-3 py-1 rounded-full w-full sm:w-auto text-center sm:text-left">
                   Free Plan, 5 Tasks Limit
                 </span>
               )}
