@@ -3,6 +3,7 @@ import ReusableInput from "../../common/ReusableInput";
 import ReusableButton from "../../common/ReusableButton";
 import ReusableSelect from "../../common/ReusableSelect";
 import { apiHelpers } from "../../services/axiosInstance";
+import { toast } from "react-toastify";
 
 const AddTask = ({ onClose, onTaskAdded }) => {
   const [step, setStep] = useState(1);
@@ -68,10 +69,22 @@ const AddTask = ({ onClose, onTaskAdded }) => {
 
       setUserId(res.data.data.id);
       localStorage.setItem("taskUser", JSON.stringify(res.data));
+      toast.success("Account created successfully!");
+
       setStep(2);
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.errors) {
-        setUserErrors(err.response.data.errors);
+      if (err.response && err.response.data) {
+        if (err.response.data.errors) {
+          setUserErrors(err.response.data.errors);
+        } else if (err.response.data.error || err.response.data.message) {
+          // Show toast for general error
+          toast.error(err.response.data.error || err.response.data.message);
+          setUserErrors({
+            general: err.response.data.error || err.response.data.message,
+          });
+        } else {
+          setUserErrors({ general: "Failed to save user. Please try again." });
+        }
       } else {
         setUserErrors({ general: "Failed to save user. Please try again." });
       }
@@ -113,6 +126,7 @@ const AddTask = ({ onClose, onTaskAdded }) => {
       });
       if (onTaskAdded) onTaskAdded();
       if (onClose) onClose();
+      toast.success("Task created successfully!");
     } catch (err) {
       if (err.response && err.response.data && err.response.data.errors) {
         setErrors(err.response.data.errors);
@@ -127,40 +141,48 @@ const AddTask = ({ onClose, onTaskAdded }) => {
   // Step 1: User Info
   if (step === 1) {
     return (
-      <form className="rounded-t-3xl" onSubmit={handleUserSubmit}>
-        <div className="bg-white text-gray-800 p-4 rounded-2xl">
-          <ReusableInput
-            label="Full Name"
-            value={userInfo.full_name}
-            onChange={handleUserChange("full_name")}
-            error={userErrors.full_name}
-          />
-          <ReusableInput
-            label="Email"
-            type="email"
-            value={userInfo.email}
-            onChange={handleUserChange("email")}
-            error={userErrors.email}
-          />
-          {userErrors.general && (
-            <div className="text-red-500 text-sm mb-2">
-              {userErrors.general}
-            </div>
-          )}
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-600 mx-auto mb-2"></div>
-              <p className="text-gray-500 text-sm">Saving user...</p>
-            </div>
-          ) : (
-            <ReusableButton
-              className="mt-6 w-full"
-              label="Continue"
-              type="submit"
+      <div className="flex justify-center items-center">
+        <form
+          className="w-full max-w-md rounded-t-3xl border p-3 bg-white flex flex-col items-center"
+          onSubmit={handleUserSubmit}
+        >
+          <span className="text-lg font-bold mb-4 text-center">
+            Welcome! 🥳 Create an Account.
+          </span>
+          <div className="w-full flex flex-col gap-4">
+            <ReusableInput
+              label="Full Name"
+              value={userInfo.full_name}
+              onChange={handleUserChange("full_name")}
+              error={userErrors.full_name}
             />
-          )}
-        </div>
-      </form>
+            <ReusableInput
+              label="Email"
+              type="email"
+              value={userInfo.email}
+              onChange={handleUserChange("email")}
+              error={userErrors.email}
+            />
+            {userErrors.general && (
+              <div className="text-red-500 text-sm mb-2">
+                {userErrors.general}
+              </div>
+            )}
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-600 mx-auto mb-2"></div>
+                <p className="text-gray-500 text-sm">Saving user...</p>
+              </div>
+            ) : (
+              <ReusableButton
+                className="bg-purple-600 text-white px-4 py-2 rounded-full w-full text-center text-sm sm:text-base mt-2"
+                label="Continue"
+                type="submit"
+              />
+            )}
+          </div>
+        </form>
+      </div>
     );
   }
 
@@ -205,7 +227,7 @@ const AddTask = ({ onClose, onTaskAdded }) => {
           </div>
         ) : (
           <ReusableButton
-            className="bg-purple-600 text-white px-4 py-2 rounded-full w-full text-center text-sm sm:text-base mt-2"
+            className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold px-4 py-2 rounded-full shadow-md text-sm sm:text-base px-3 py-1 rounded mt-2 mb-2"
             label="Save Task"
             disabled={loading}
             type="submit"
