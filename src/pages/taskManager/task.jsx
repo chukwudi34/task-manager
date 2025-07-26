@@ -184,6 +184,10 @@ export default function Task() {
     );
   });
 
+  const totalTasks = tasks.length;
+  const freeTasksLimit = 5;
+  const freeTasksRemaining = Math.max(0, freeTasksLimit - totalTasks);
+
   return (
     <>
       <div className="min-h-screen bg-gradient-to-b from-purple-600 to-indigo-700 w-full absolute inset-0 flex flex-col items-center">
@@ -233,6 +237,28 @@ export default function Task() {
                   Free Plan, 5 Tasks Limit
                 </span>
               )}
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
+              {!isProUser && (
+                <span className="text-xs text-gray-600">
+                  {freeTasksRemaining > 0 ? (
+                    <span className="inline-block bg-yellow-100 text-yellow-800 rounded-full px-3 py-1 font-semibold mr-2">
+                      {freeTasksRemaining} free task
+                      {freeTasksRemaining !== 1 ? "s" : ""} remaining
+                    </span>
+                  ) : (
+                    <span className="inline-block bg-red-100 text-red-800 rounded-full px-3 py-1 font-semibold mr-2">
+                      Free limit reached
+                    </span>
+                  )}
+                </span>
+              )}
+              <span className="text-xs text-gray-600 mt-2 mb-3">
+                Total tasks:{" "}
+                <span className="inline-block bg-green-100 text-green-800 rounded-full px-3 py-1 font-semibold">
+                  {totalTasks}
+                </span>
+              </span>
             </div>
             {/* Filter Inputs */}
             <div className="mb-4 sm:mb-6">
